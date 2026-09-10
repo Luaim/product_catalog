@@ -22,6 +22,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   bool _isLoading = false;
   Timer? _debounce;
   String? _errorMessage;
+  String? _currentSearchQuery;
 
   @override
   void initState() {
@@ -74,6 +75,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         setState(() {
           _products.clear();
           _skip = 0;
+          _currentSearchQuery = null;
         });
         _fetchProducts();
         return;
@@ -84,8 +86,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Future<void> _searchProducts(String query) async {
+    _currentSearchQuery = query;
+
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
     try {
@@ -97,6 +102,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
           ..addAll(products);
       });
     } catch (e) {
+      setState(() {
+        _products.clear();
+        _errorMessage = 'Failed to search products';
+      });
+
       if (kDebugMode) {
         print('Error searching products: $e');
       }
@@ -136,7 +146,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           Text(_errorMessage!),
                           const SizedBox(height: 12),
                           ElevatedButton(
-                            onPressed: _fetchProducts,
+                            onPressed: () {
+                              if (_currentSearchQuery != null) {
+                                _searchProducts(_currentSearchQuery!);
+                              } else {
+                                _fetchProducts();
+                              }
+                            },
                             child: const Text('Retry'),
                           ),
                         ],
