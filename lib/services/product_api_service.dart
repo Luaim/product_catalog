@@ -19,4 +19,17 @@ class ProductApiService {
       throw Exception('Failed to fetch products');
     }
   }
+
+  Future<Product> fetchProduct(int id) async {
+    final response = await http.get(
+      Uri.parse('https://dummyjson.com/products/$id'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return Product.fromJson(data);
+    } else {
+      throw Exception('Failed to fetch product');
+    }
+  }
 }
