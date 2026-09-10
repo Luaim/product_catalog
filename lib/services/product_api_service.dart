@@ -1,3 +1,22 @@
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-http.get(https =//dummyjson.com/products?limit=20&skip=0)
+import '../models/product.dart';
+
+class ProductApiService {
+  Future<List<Product>> fetchProducts(int skip) async {
+    final response = await http.get(
+      Uri.parse('https://dummyjson.com/products?limit=20&skip=$skip'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      return (data['products'] as List)
+          .map((e) => Product.fromJson(e))
+          .toList();
+    } else {
+      throw Exception('Failed to fetch products');
+    }
+  }
+}
