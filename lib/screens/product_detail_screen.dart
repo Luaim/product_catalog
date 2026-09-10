@@ -66,6 +66,29 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     _product!.description,
                     style: const TextStyle(fontSize: 16.0),
                   ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    'Rating: ${_product!.rating}',
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  const SizedBox(height: 16.0),
+                  SizedBox(
+                    height: 120.0,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _product!.images.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Image.network(
+                            _product!.images[index],
+                            width: 120.0,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
