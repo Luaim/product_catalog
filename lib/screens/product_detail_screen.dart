@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import '../models/product.dart';
+import '../services/product_api_service.dart';
+
+class ProductDetailScreen extends StatefulWidget {
+  final int productId;
+
+  const ProductDetailScreen({super.key, required this.productId});
+
+  @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  late ProductApiService _productApiService;
+  Product? _product;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _productApiService = ProductApiService();
+    _fetchProduct();
+  }
+
+  Future<void> _fetchProduct() async {
+    final product = await _productApiService.fetchProduct(widget.productId);
+
+    setState(() {
+      _product = product;
+      _isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Product Detail'),
+      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.network(_product!.thumbnail),
+                  const SizedBox(height: 16.0),
+                  Text(
+                    _product!.title,
+                    style: const TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    '\$${_product!.price}',
+                    style: const TextStyle(fontSize: 20.0),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Text(
+                    _product!.description,
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+}
